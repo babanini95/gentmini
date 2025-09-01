@@ -4,9 +4,12 @@ import config
 
 def get_file_content(working_directory, file_path):
     abs_working_directory = os.path.abspath(working_directory)
-    abs_file_path = os.path.join(abs_working_directory, file_path)
+    abs_file_path = os.path.abspath(os.path.join(abs_working_directory, file_path))
 
-    if not abs_file_path.startswith(abs_working_directory):
+    if (
+        os.path.commonpath([abs_working_directory, abs_file_path])
+        != abs_working_directory
+    ):
         return f'Error: Cannot read "{file_path}" as it is outside the permitted working directory'
 
     if not os.path.isfile(abs_file_path):
