@@ -1,5 +1,6 @@
 import os
 import sys
+import call
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
@@ -29,6 +30,9 @@ def main():
     if len(sys.argv) == 1:
         print("need argument")
         sys.exit(1)
+    is_verbose = False
+    if len(sys.argv) >= 3:
+        is_verbose = sys.argv[2] == "--verbose"
 
     system_prompt = """
     You are a helpful AI coding agent.
@@ -52,17 +56,19 @@ def main():
     )
     if response.function_calls != None:
         for func in response.function_calls:
-            print(f"Calling function: {func.name}({func.args})")
+            content = call.call_function(func, is_verbose)
+            if not content.parts[0].function_response.response:
+                raise SystemExit("Error: no function's response")
+            print(f"-> {content.parts[0].function_response.response}")
     else:
         print(response.text)
 
-    if len(sys.argv) >= 3:
-        if sys.argv[2] == "--verbose":
-            print(
-                f"User prompt: {sys.argv[1]}\n"
-                f"Prompt tokens: {response.usage_metadata.prompt_token_count}\n"
-                f"Response tokens: {response.usage_metadata.candidates_token_count}"
-            )
+    if is_verbose:
+        print(
+            f"User prompt: {sys.argv[1]}\n"
+            f"Prompt tokens: {response.usage_metadata.prompt_token_count}\n"
+            f"Response tokens: {response.usage_metadata.candidates_token_count}"
+        )
 
 
 if __name__ == "__main__":

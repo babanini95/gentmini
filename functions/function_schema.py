@@ -49,7 +49,7 @@ schema_write_file = types.FunctionDeclaration(
 
 schema_run_python_file = types.FunctionDeclaration(
     name="run_python_file",
-    description="Run a selected python file with optional arguments in the working directory",
+    description="Execute a selected python file with optional arguments in the working directory. If no argument passed, execute without argument",
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
@@ -62,7 +62,7 @@ schema_run_python_file = types.FunctionDeclaration(
                 items=types.Schema(
                     type=types.Type.STRING,
                 ),
-                description="The arguments for the script. Only filled when needed",
+                description="The arguments for the script. the default value is None",
                 default=None,
             ),
         },
