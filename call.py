@@ -17,7 +17,9 @@ def call_function(function_call_part: types.FunctionCall, verbose=False):
     function_name = function_call_part.name
     args = function_call_part.args
     if verbose:
-        print(f"Calling function: {function_call_part.name}({function_call_part.args})")
+        print(
+            f" - Calling function: {function_call_part.name}({function_call_part.args})"
+        )
     else:
         print(f" - Calling function: {function_call_part.name}")
 

@@ -1,6 +1,7 @@
 import os
 import sys
 import call
+import config
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
@@ -47,21 +48,38 @@ def main():
     All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
     """
 
-    response = client.models.generate_content(
-        model=model_name,
-        contents=messages,
-        config=types.GenerateContentConfig(
-            tools=[available_functions], system_instruction=system_prompt
-        ),
-    )
-    if response.function_calls != None:
-        for func in response.function_calls:
-            content = call.call_function(func, is_verbose)
-            if not content.parts[0].function_response.response:
-                raise SystemExit("Error: no function's response")
-            print(f"-> {content.parts[0].function_response.response}")
-    else:
-        print(response.text)
+    iterations = 0
+    while iterations <= config.MAX_ITERATIONS:
+        try:
+            response = client.models.generate_content(
+                model=model_name,
+                contents=messages,
+                config=types.GenerateContentConfig(
+                    tools=[available_functions], system_instruction=system_prompt
+                ),
+            )
+
+            # print(f"response.candidates: {response.candidates}")
+
+            if len(response.candidates) > 0:
+                for candidate in response.candidates:
+                    messages.append(candidate.content)
+
+            if response.function_calls != None:
+                for func in response.function_calls:
+                    content = call.call_function(func, is_verbose)
+                    if content.parts == None:
+                        raise SystemExit("Error: no function's response")
+                    messages.append(types.Content(parts=content.parts, role="user"))
+                    # print(f"-> {content.parts[0].function_response.response}")
+            else:
+                print(f"\nFinal response:\n{response.text}")
+                break
+        except Exception as e:
+            print(f"Error: {e}")
+            break
+
+        iterations += 1
 
     if is_verbose:
         print(
