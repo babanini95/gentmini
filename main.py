@@ -3,12 +3,26 @@ import sys
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from functions.function_schema import (
+    schema_get_file_content,
+    schema_get_files_info,
+    schema_run_python_file,
+    schema_write_file,
+)
 
 load_dotenv()
 api_key = os.environ.get("GEMINI_KEY_API")
 client = genai.Client(api_key=api_key)
-
+model_name = "gemini-2.0-flash-001"
 messages = [types.Content(role="user", parts=[types.Part(text=sys.argv[1])])]
+available_functions = types.Tool(
+    function_declarations=[
+        schema_get_files_info,
+        schema_get_file_content,
+        schema_write_file,
+        schema_run_python_file,
+    ]
+)
 
 
 def main():
@@ -16,11 +30,32 @@ def main():
         print("need argument")
         sys.exit(1)
 
+    system_prompt = """
+    You are a helpful AI coding agent.
+
+    When a user asks a question or makes a request, make a function call plan. You can perform the following operations:
+
+    - List files and directories
+    - Read file contents
+    - Execute Python files with optional arguments
+    - Write or overwrite files
+
+    All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
+    """
+
     response = client.models.generate_content(
-        model="gemini-2.0-flash-001",
+        model=model_name,
         contents=messages,
+        config=types.GenerateContentConfig(
+            tools=[available_functions], system_instruction=system_prompt
+        ),
     )
-    print(response.text)
+    if response.function_calls != None:
+        for func in response.function_calls:
+            print(f"Calling function: {func.name}({func.args})")
+    else:
+        print(response.text)
+
     if len(sys.argv) >= 3:
         if sys.argv[2] == "--verbose":
             print(
