@@ -34,6 +34,33 @@ gentmini/
 └── README.md                   # This file
 ```
 
+## Prerequisites
+
+<details>
+  <summary> Install <code><a href="https://docs.astral.sh/uv/">uv</a></code> package manager</summary>
+
+### Install with curl
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+### Install with wget
+
+```bash
+wget -qO- https://astral.sh/uv/install.sh | sh
+```
+
+### Install on Windows (PowerShell)
+
+Use `irm` to download the script and execute it with `iex`:
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+</details>
+
 ## Setup
 
 1. Clone the repository:
