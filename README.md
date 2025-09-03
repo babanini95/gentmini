@@ -1,6 +1,6 @@
 # Gentmini
 
-A minimal AI Agent using Gemini. Built from scratch in Python.
+A minimal AI Agent using Gemini. Built from scratch in Python for learning purposes.
 
 ## Learning Goals
 
@@ -11,6 +11,10 @@ The learning goals of this project are:
 3. Practice our Python and functional programming skills
 
 The goal is not to build an LLM from scratch, but to instead use a pre-trained LLM to build an agent from scratch.
+
+## How It Works
+
+The agent uses Gemini API to process user input and generate responses. It will only work on a specified working directory defined in `config.py` (a simple calculator app in this case). The agent can call a set of predefined functions, which are defined in the `functions` directory. For this project, the agent can get files info, read a file, write to a file, and run Python code.
 
 ## Project Structure
 
@@ -61,7 +65,7 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 </details>
 
-## Setup
+## Setup and Run
 
 1. Clone the repository:
 
